@@ -29,20 +29,37 @@ var storage = multer.diskStorage({
 
 const upload = multer({ storage: storage }).single("upload_image");
 
+app.get('/', (req, res) => {
+    // Response from server
+    return res.status(200).json({
+        success: true,
+        message: 'Response from server : connected to server',
+    });
+});
 
 app.post("/upload-file", (req, res) => {
 
     upload(req, res, (err) => {
+
+        // If the upload fails
         if (err) {
-            res.status(400).send("Something went wrong!");
+            return res.status(400).json({
+                success: false,
+                message: 'File upload failed',
+                error: err
+            });
         }
-        res.send(req.file);
+
+        // Upload successfully
+        return res.status(200).json({
+            success: true,
+            message: 'File uploaded successfully',
+            data: req.file
+        });
     });
 });
 
-app.get('/', (req, res) => {
-    res.send('This from server');
-});
+
 
 app.listen(port, () => {
     console.log(`app listening on port ${port}`);
